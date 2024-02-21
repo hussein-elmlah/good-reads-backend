@@ -1,17 +1,25 @@
 const AdminModel = require('../models/admin.model');
 
 module.exports = {
-  login(req, res, next) {
-    AdminModel.method()
-      .then(() => res.json({}))
-      .catch((err) => res.status(400).json({ err }));
+  async login(req, res) {
+    const user = req.body;
+
+    try {
+      const valid = await AdminModel.method(user);
+      res.json(valid);
+    } catch (err) {
+      res.status(400).json(err);
+    }
   },
 
-  register(req, res, next) {
-    const { username, password } = req.body;
+  async register(req, res) {
+    const user = req.body;
 
-    AdminModel.method()
-      .then(() => res.status(201).json({}))
-      .catch((err) => res.status(400).json({ err }));
-  }
+    try {
+      const valid = await AdminModel.method(user);
+      res.json(valid);
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  },
 };

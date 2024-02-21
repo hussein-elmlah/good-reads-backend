@@ -7,19 +7,20 @@ const app = express();
 
 app.use(express.json());
 app.use(routes);
-
-app.use((err, req, res) => {
-  res.status(err.status).json({ error: err.message });
+app.use((err, req, res, next) => {
+  res.status(err.status).json({ error: err.name, description: err.message });
 });
 
-const { PORT } = process.env.PORT;
+const { PORT, DB_USERNAME, DB_PASSWORD, CLUSTER_URL, DB_NAME } = process.env;
+const uri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@${CLUSTER_URL}/${DB_NAME}`;
 mongoose
-  .connect(process.env.DATABASE_URL)
+  .connect(uri)
   .then(() => {
+    console.log('Connected to MongoDB Atlas');
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.error('Error connecting to MongoDB Atlas:', err);
   });

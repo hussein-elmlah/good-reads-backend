@@ -1,15 +1,36 @@
 const UserModel = require('../models/user.model');
 
 module.exports = {
-  login(req, res, next) {
-    UserModel.method()
-      .then(() => res.json({}))
-      .catch((err) => res.status(400).json({ err }));
+  async login(req, res) {
+    const user = req.body;
+    user.username = user.username.trim();
+
+    try {
+      const newUser = await UserModel.method(user);
+      res.json(newUser);
+    } catch (err) {
+      res.status(400).json(err);
+    }
   },
 
-  register(req, res, next) {
-    UserModel.method()
-      .then(() => res.status(201).json({}))
-      .catch((err) => res.status(400).json({ err }));
-  }
+  async register(req, res) {
+    const user = req.body;
+    user.username = user.username.trim();
+
+    try {
+      const newUser = await UserModel.method(user);
+      res.json(newUser);
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  },
+
+  async getUserBooks(req, res) {
+    try {
+      const newUser = await UserModel.method();
+      res.json(newUser);
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  },
 };
