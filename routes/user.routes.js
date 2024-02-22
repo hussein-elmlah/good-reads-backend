@@ -20,9 +20,12 @@ router.post('/register', async (req, res, next) => {
   if (err) {
     return next(err);
   }
-  const token = generateToken(user);
-
-  res.status(201).json({ user, token });
+  try {
+    const token = await generateToken(user);
+    res.status(201).json({ user, token });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 module.exports = router;
