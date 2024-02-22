@@ -29,7 +29,7 @@ module.exports = {
 
     try {
       const newUser = await AdminModel.create({ username, password });
-      res.json(newUser);
+      res.status(201).json(newUser);
     } catch (err) {
       err.status = 400;
       next(err);

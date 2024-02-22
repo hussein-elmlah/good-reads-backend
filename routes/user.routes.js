@@ -26,7 +26,7 @@ router.post('/login', async (req, res, next) => {
   if (err) {
     return next(err);
   }
-  res.status(201).json({ token });
+  res.json({ token });
 });
 
 router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next) => {
@@ -36,7 +36,7 @@ router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next)
   if (err) {
     return next(err);
   }
-  res.status(200).json(books);
+  res.json(books);
 });
 
 module.exports = router;
