@@ -36,11 +36,13 @@ exports.login = async ({ username, password }) => {
 };
 
 exports.getUserBooks = async (userId, status, limit = 20, skip = 0) => {
+  limit = Number(limit);
+  skip = Number(skip);
   if (skip < 0) {
     skip = 0;
   }
-  if (limit < 0 || limit > 10) {
-    limit = 10;
+  if (limit < 0 || limit > 20) {
+    limit = 20;
   }
   try {
     const user = await User.findById(userId).exec();
@@ -48,8 +50,10 @@ exports.getUserBooks = async (userId, status, limit = 20, skip = 0) => {
     if (!user) {
       throw new CustomError('User not found', 404);
     }
-
-    const books = user.books.filter((book) => book.book_status === status);
+    let { books } = user;
+    if (status) {
+      books = books.filter((book) => book.book_status === status);
+    }
     return books.slice(skip, skip + limit);
   } catch (error) {
     throw new CustomError(`Failed to get user's books: ${error.message}`, 500);
