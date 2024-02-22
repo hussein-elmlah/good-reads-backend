@@ -12,14 +12,19 @@ module.exports = {
     }
   },
 
-  async register(req, res) {
-    const user = req.body;
+  async register(req, res, next) {
+    const { username, password } = req.body;
+
+    if (username && username.includes(' ')) {
+      return res.status(400).json({ error: 'Username should not contain spaces' });
+    }
 
     try {
-      const valid = await AdminModel.method(user);
-      res.json(valid);
+      const newUser = await AdminModel.create({ username, password });
+      res.json(newUser);
     } catch (err) {
-      res.status(400).json(err);
+      err.status = 400;
+      next(err);
     }
   },
 };
