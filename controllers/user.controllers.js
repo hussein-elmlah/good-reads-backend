@@ -1,36 +1,11 @@
-const UserModel = require('../models/user.model');
+const User = require('../models/user.model');
+const CustomError = require('../lib/customError');
 
-module.exports = {
-  async login(req, res) {
-    const user = req.body;
-    user.username = user.username.trim();
-
-    try {
-      const newUser = await UserModel.method(user);
-      res.json(newUser);
-    } catch (err) {
-      res.status(400).json(err);
-    }
-  },
-
-  async register(req, res) {
-    const user = req.body;
-    user.username = user.username.trim();
-
-    try {
-      const newUser = await UserModel.method(user);
-      res.json(newUser);
-    } catch (err) {
-      res.status(400).json(err);
-    }
-  },
-
-  async getUserBooks(req, res) {
-    try {
-      const newUser = await UserModel.method();
-      res.json(newUser);
-    } catch (err) {
-      res.status(400).json(err);
-    }
-  },
+exports.getUsers = async () => {
+  try {
+    const users = await User.find({}, 'firstName');
+    return users;
+  } catch (error) {
+    throw new CustomError(`Failed to get users: ${error.message}`, 500);
+  }
 };
