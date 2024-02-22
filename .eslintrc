@@ -2,6 +2,8 @@
     "extends": "airbnb",
     "rules": {
       "linebreak-style": "off",
-      "consistent-return": "off"
+      "consistent-return": "off",
+      "no-param-reassign": "off", 
+      "no-underscore-dangle": "off"
     }
 }
