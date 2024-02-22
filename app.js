@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const express = require('express');
-const helmet = require('helmet');
 const cors = require('cors');
+const helmet = require('helmet');
+const path = require('path');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 
 const app = express();
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // middlewares
 app.use(helmet()); // Security middleware
@@ -21,6 +25,11 @@ app.use(cors({
 
 // routes middleware
 app.use(routes);
+
+// Wildcard route handler for non-existing routes (404)
+app.get('*', (req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
 
 // ErrorHandler middleware
 app.use(errorHandler);
