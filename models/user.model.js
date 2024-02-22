@@ -58,7 +58,6 @@ const userSchema = new Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   books: [
     {
@@ -125,6 +124,10 @@ userSchema.post('findOneAndUpdate', async function postUpdate(doc, next) {
     return next(error);
   }
 });
+
+userSchema.methods.verifyPassword = function verifyPassword(password) {
+  return bcrypt.compareSync(password, this.password);
+};
 
 userSchema.plugin(AutoIncrement, { inc_field: '_id' });
 

@@ -1,16 +1,8 @@
 const User = require('../models/user.model');
 const CustomError = require('../lib/customError');
+const generateToken = require('../utils/jwtUtils');
 
-exports.getUsers = async () => {
-  try {
-    const users = await User.find({}, 'firstName');
-    return users;
-  } catch (error) {
-    throw new CustomError(`Failed to get users: ${error.message}`, 500);
-  }
-};
-
-exports.createUser = async ({
+exports.register = async ({
   firstName, lastName, email, username, password, image,
 }) => {
   try {
@@ -20,5 +12,25 @@ exports.createUser = async ({
     return user;
   } catch (error) {
     throw new CustomError(`Failed to create user: ${error.message}`, 500);
+  }
+};
+
+exports.login = async ({ username, password }) => {
+  try {
+    const user = await User.findOne({ username }).exec();
+    if (!user) {
+      throw new CustomError('UN_Authenticated', 401);
+    }
+    const valid = user.verifyPassword(password);
+    if (!valid) {
+      throw new CustomError('UN_Authenticated', 401);
+    }
+    const token = await generateToken(user);
+    return token;
+  } catch (error) {
+    if (error instanceof CustomError) {
+      throw error;
+    }
+    throw new CustomError(`Failed to login user: ${error.message}`, error.status || 500);
   }
 };
