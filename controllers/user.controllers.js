@@ -31,6 +31,19 @@ exports.login = async ({ username, password }) => {
     if (error instanceof CustomError) {
       throw error;
     }
-    throw new CustomError(`Failed to login user: ${error.message}`, error.status || 500);
+    throw new CustomError(`Failed to login user: ${error.message}`, 500);
+  }
+};
+
+exports.getUserBooks = async (userId) => {
+  try {
+    const user = await User.findById(userId).exec();
+
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+    return user.books;
+  } catch (error) {
+    throw new CustomError(`Failed to get user's books: ${error.message}`, 500);
   }
 };

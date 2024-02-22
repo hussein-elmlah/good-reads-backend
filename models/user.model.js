@@ -61,7 +61,7 @@ const userSchema = new Schema({
   },
   books: [
     {
-      bookId: {
+      _id: {
         type: Number,
         unique: true,
       },
