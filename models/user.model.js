@@ -101,7 +101,7 @@ userSchema.pre('save', async function preSave(next) {
   try {
     const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
-    next();
+    return next();
   } catch (error) {
     return next(error);
   }
@@ -112,9 +112,9 @@ userSchema.pre('findOneAndUpdate', async function preUpdate(next) {
   try {
     // Enable validation for the update operation
     this.options.runValidators = true;
-    next();
+    return next();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -131,7 +131,7 @@ userSchema.post('findOneAndUpdate', async function postUpdate(doc, next) {
     }
     await doc.save();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
