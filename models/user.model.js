@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const AutoIncrementFactory = require('mongoose-sequence');
 const CustomError = require('../lib/customError');
 
@@ -40,6 +40,7 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     minLength: 5,
     maxLength: 30,
     trim: true,
@@ -81,7 +82,6 @@ const userSchema = new Schema({
   ],
 }, { timestamps: true, runValidators: true });
 
-// Define a toJSON method to control the JSON output
 userSchema.set('toJSON', {
   transform(doc, ret) {
     ret.id = ret._id;
@@ -91,7 +91,6 @@ userSchema.set('toJSON', {
   },
 });
 
-// Hash password before saving
 userSchema.pre('save', async function preSave(next) {
   if (!this.isModified('password')) {
     return next();
@@ -105,10 +104,8 @@ userSchema.pre('save', async function preSave(next) {
   }
 });
 
-// handle validation in update
 userSchema.pre('findOneAndUpdate', async function preUpdate(next) {
   try {
-    // Enable validation for the update operation
     this.options.runValidators = true;
     return next();
   } catch (error) {
@@ -116,15 +113,12 @@ userSchema.pre('findOneAndUpdate', async function preUpdate(next) {
   }
 });
 
-// handle hashing password in update
 userSchema.post('findOneAndUpdate', async function postUpdate(doc, next) {
   try {
     if (!doc) {
-      // Handle the case where no user is found
       throw new CustomError('user not found', 404);
     }
     if (this._update.$set.password && typeof this._update.$set.password === 'string') {
-      // Access the document being updated and mark 'password' field as modified
       doc.markModified('password');
     }
     await doc.save();
