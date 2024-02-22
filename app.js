@@ -1,17 +1,29 @@
-const express = require('express');
 const mongoose = require('mongoose');
+const express = require('express');
+const helmet = require('helmet');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 
 const app = express();
-
-app.use(express.json());
+// middlewares
+app.use(helmet()); // Security middleware
+app.use(express.json()); // Body parsing middleware
+// routes middleware
 app.use(routes);
 
+// ErrorHandler middleware
 app.use(errorHandler);
 
-const { PORT, DB_USERNAME, DB_PASSWORD, CLUSTER_URL, DB_NAME } = process.env;
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.log('Uncaught exception occurred:\n', err);
+});
+
+// Database connection
+const {
+  PORT, DB_USERNAME, DB_PASSWORD, CLUSTER_URL, DB_NAME,
+} = process.env;
 const uri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@${CLUSTER_URL}/${DB_NAME}`;
 mongoose
   .connect(uri)
