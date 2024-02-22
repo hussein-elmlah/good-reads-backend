@@ -7,6 +7,7 @@ const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 
 const app = express();
+
 // middlewares
 app.use(helmet()); // Security middleware
 app.use(express.json()); // Body parsing middleware
