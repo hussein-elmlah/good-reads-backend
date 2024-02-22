@@ -9,37 +9,29 @@ require('dotenv').config();
 
 const app = express();
 
-// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// middlewares
-app.use(helmet()); // Security middleware
-app.use(express.json()); // Body parsing middleware
+app.use(helmet());
+app.use(express.json());
 
-// Apply CORS middleware
 app.use(cors({
-  origin: '*', // Replace '*' with specific allowed origins in production for security reasons
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'patch', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// routes middleware
 app.use(routes);
 
-// Wildcard route handler for non-existing routes (404)
 app.get('*', (req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
-// ErrorHandler middleware
 app.use(errorHandler);
 
-// Error handling for uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.log('Uncaught exception occurred:\n', err);
 });
 
-// Database connection
 const {
   PORT, DB_USERNAME, DB_PASSWORD, CLUSTER_URL, DB_NAME,
 } = process.env;
