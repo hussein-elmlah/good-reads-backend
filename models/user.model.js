@@ -10,7 +10,6 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   _id: {
     type: Number,
-    required: true,
   },
   firstName: {
     type: String,

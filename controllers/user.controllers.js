@@ -9,3 +9,16 @@ exports.getUsers = async () => {
     throw new CustomError(`Failed to get users: ${error.message}`, 500);
   }
 };
+
+exports.createUser = async ({
+  firstName, lastName, email, username, password, image,
+}) => {
+  try {
+    const user = await User.create({
+      firstName, lastName, email, username, password, image,
+    });
+    return user;
+  } catch (error) {
+    throw new CustomError(`Failed to create user: ${error.message}`, 500);
+  }
+};
