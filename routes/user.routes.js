@@ -31,7 +31,8 @@ router.post('/login', async (req, res, next) => {
 
 router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next) => {
   const userId = req.params.id;
-  const [err, books] = await asyncWrapper(UserController.getUserBooks(userId));
+  const { limit, skip, status } = req.query;
+  const [err, books] = await asyncWrapper(UserController.getUserBooks(userId, status, limit, skip));
   if (err) {
     return next(err);
   }
