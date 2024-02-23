@@ -7,16 +7,21 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      minlength: 6,
+      minLength: 5,
+      maxLength: 20,
+      trim: true,
+      match: [/^[a-zA-Z0-9_.-]+$/, 'only alphanumeric characters, underscore, hyphen, and dot are allowed.'],
     },
     password: {
       type: String,
       required: true,
-      minlength: 8,
-      validate: {
-        validator: (password) => /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        message: () => 'must contain at least one special character.',
-      },
+      minLength: 8,
+      maxLength: 30,
+      trim: true,
+      match: [
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=?/.]).*$/,
+        'must contain at least one digit, one lowercase letter, one uppercase letter, and one special character.',
+      ],
     },
   },
   {
@@ -25,15 +30,17 @@ const adminSchema = new mongoose.Schema(
     },
     toJSON: {
       transform: (doc, ret) => {
-        ret.password = undefined;
-        return ret;
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        delete ret.password;
       },
     },
   },
 );
 
 adminSchema.pre('save', async function preSave() {
-  this.password = await bcrypt.hash(this.password, 8);
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 adminSchema.methods.verifyPassword = async function verifyPassword(password) {
