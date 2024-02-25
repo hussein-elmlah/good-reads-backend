@@ -9,10 +9,10 @@ const bookSchema = new mongoose.Schema({
   category_id: { type: Number, ref: 'categories', required: false },
   reviews:[{
     user_id:{type: Number, ref: 'user' },
-        rate:{type: Number, default: 0 },
-        comment:[],
-        state:{type: String,
-        enum:['currently Read' , 'Want to Read' , 'Read'] 
+    rate:{type: Number, default: 0 },
+    comment:[],
+    state:{type: String,
+    enum:['currently Read' , 'Want to Read' , 'Read'] 
     }}]
 })
 
