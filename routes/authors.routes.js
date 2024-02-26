@@ -10,6 +10,7 @@ router.get('/', AuthorsController.getAllAuthors);
 router.get('/authorpage', AuthorsController.getAllAuthorsPaginated);
 // router.get('/getPopularAuthors', AuthorsController.getPopularAuthors);
 router.post('/', AuthorsController.addAuthor);
+router.get('/:id', AuthorsController.getAuthor);
 router.put('/:id', AuthorsController.updateAuthor);
 router.delete('/:id', AuthorsController.deleteAuthor);
 
