@@ -14,13 +14,34 @@ const AuthorsController = {
 
     res.json(authors);
   },
+  getAllAuthorsPaginated: async (req, res, next) => {
+    const pageNumber = parseInt(req.query.pageNumber, 10) || 0;
+    const limitSize = parseInt(req.query.limitSize, 10) || 5;
+    const skip = pageNumber * limitSize;
+
+    const [error, authors] = await asyncWrapper(
+      Author.find()
+        .skip(skip)
+        .limit(limitSize)
+        .exec(),
+    );
+
+    if (error) {
+      return next(error);
+    }
+
+    if (authors.length === 0) {
+      return res.status(404).json({ message: 'No data found' });
+    }
+
+    res.json(authors);
+  },
 
   addAuthor: async (req, res) => {
     const {
       firstName, lastName, dob, books, photo,
     } = req.body;
 
-    // Validate input
     if (
       !firstName
       || !/^[a-zA-Z]+$/.test(firstName)
@@ -51,7 +72,6 @@ const AuthorsController = {
       firstName, lastName, dob, books, photo,
     } = req.body;
 
-    // Validate input
     if (
       !firstName
       || !/^[a-zA-Z]+$/.test(firstName)
@@ -95,6 +115,39 @@ const AuthorsController = {
 
     res.json({ message: 'Author deleted successfully' });
   },
+
+  //   getPopularAuthors: async (req, res, next) => {
+  //     const [err, popularAuthors] = await asyncWrapper(Author.aggregate([
+  //       {
+  //         $lookup: {
+  //           from: 'books',
+  //           localField: '_id',
+  //           foreignField: 'author',
+  //           as: 'books',
+  //         },
+  //       },
+  //       {
+  //         $project: {
+  //           _id: 1,
+  //           firstName: 1,
+  //           lastName: 1,
+  //           bookCount: { $size: '$books' },
+  //         },
+  //       },
+  //       {
+  //         $sort: { bookCount: -1 },
+  //       },
+  //       {
+  //         $limit: 3,
+  //       },
+  //     ]));
+
+  //     if (err) {
+  //       return next(err);
+  //     }
+
+//     res.json({ popularAuthors });
+//   },
 };
 
 module.exports = AuthorsController;
