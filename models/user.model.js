@@ -75,6 +75,11 @@ const userSchema = new mongoose.Schema(
           max: 5,
           default: 0,
         },
+        review: {
+          type: String,
+          maxLength: 200,
+          trim: true,
+        },
       },
     ],
   },
