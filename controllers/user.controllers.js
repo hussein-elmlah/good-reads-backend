@@ -6,9 +6,18 @@ exports.register = async ({
   firstName, lastName, email, username, password, image,
 }) => {
   try {
+    const defaultImagePath = 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png';
+    const imagePath = image ? image.path : defaultImagePath;
+
     const user = await User.create({
-      firstName, lastName, email, username, password, image,
+      firstName,
+      lastName,
+      email,
+      username,
+      password,
+      image: imagePath,
     });
+
     return user;
   } catch (error) {
     throw new CustomError(`Failed to create user: ${error.message}`, 500);

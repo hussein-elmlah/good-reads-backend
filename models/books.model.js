@@ -13,8 +13,8 @@ const bookSchema = new mongoose.Schema({
     rate:{type: Number, default: 0 },
     comment:[],
     state:{type: String,
-      enum:['currently Read' , 'Want to Read' , 'Read'] 
-    } }]
+    enum:['currently Read' , 'Want to Read' , 'Read'] 
+    }}]
 })
 
 const bookModel = mongoose.model('books', bookSchema);
