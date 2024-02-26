@@ -14,7 +14,15 @@ const bookSchema = new mongoose.Schema({
     comment:[],
     state:{type: String,
     enum:['currently Read' , 'Want to Read' , 'Read'] 
-    }}]
+    }}],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    }
 })
 
 const bookModel = mongoose.model('books', bookSchema);
