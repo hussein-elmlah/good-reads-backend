@@ -36,6 +36,7 @@ const {
   PORT, DB_USERNAME, DB_PASSWORD, CLUSTER_URL, DB_NAME,
 } = process.env;
 const uri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@${CLUSTER_URL}/${DB_NAME}`;
+
 mongoose
   .connect(uri)
   .then(() => {
