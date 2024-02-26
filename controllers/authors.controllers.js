@@ -95,6 +95,24 @@ const AuthorsController = {
 
     res.json({ message: 'Author deleted successfully' });
   },
+
+  async getAuthor(req, res) {
+    const { id } = req.params;
+
+    const [error, selectedAuthor] = await asyncWrapper(
+      Author.findById(id),
+    );
+
+    if (error) {
+      return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    }
+
+    if (!selectedAuthor) {
+      return res.status(404).json({ error: 'Author not found' });
+    }
+
+    res.json(selectedAuthor);
+  },
 };
 
 module.exports = AuthorsController;
