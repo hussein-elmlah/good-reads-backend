@@ -40,7 +40,6 @@ const authorSchema = new Schema({
   },
 });
 
-// Use mongoose-sequence to auto-increment _id
 authorSchema.plugin(AutoIncrement, { id: 'author_id_counter', inc_field: '_id' });
 
 const Author = mongoose.model('Author', authorSchema);
