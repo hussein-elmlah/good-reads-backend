@@ -1,77 +1,70 @@
 const asyncWrapper = require('../lib/async-wrapper');
 const CategoriesModel = require('../models/categories.model');
 
-// module.exports = {
-//   async getCategories(req, res) {
-//     try {
-//       const categories = await CategoriesModel.method();
-//       res.json(categories);
-//     } catch (err) {
-//       res.status(400).json(err);
-//     }
-//   },
-
-//   async getCategory(req, res) {
-//     try {
-//       const category = await CategoriesModel.create();
-//       res.json(category);
-//     } catch (err) {
-//       res.status(400).json(err);
-//     }
-//   },
-// };
-
 const CategoriesController = {
   getAllCategories: async (req, res) => {
     const [error, categories] = await asyncWrapper(CategoriesModel.find());
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: error.message });
     }
 
     res.json(categories);
   },
 
   addCategory: async (req, res) => {
-    const { categoryName } = req.body;
+    const { name } = req.body;
 
-    // Validate input
-    if (!categoryName || !/^[a-zA-Z]+$/.test(categoryName)) {
-      return res.status(400).json({ error: 'Invalid Category Name' });
+    if (!name || !/^[a-zA-Z]+$/.test(name)) {
+      return res.status(400).json({ error: 'Invalid Category Name.' });
     }
 
-    const [error, savedCategory] = await asyncWrapper(CategoriesModel.create({ categoryName }));
+    const [error, savedCategory] = await asyncWrapper(CategoriesModel.create({ name }));
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: error.message });
     }
 
     res.status(201).json(savedCategory);
   },
 
   getCategoryById: async (req, res) => {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid ID. ID must be a number.' });
+    }
 
+    const [error, category] = await asyncWrapper(CategoriesModel.findById(req.params.id));
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found.' });
+    }
+
+    res.json(category);
   },
 
   updateCategory: async (req, res) => {
     const { id } = req.params;
-    const { categoryName } = req.body;
+    const { name } = req.body;
 
-    // Validate input
-    if (!categoryName || !/^[a-zA-Z]+$/.test(categoryName)) {
-      return res.status(400).json({ error: 'Invalid Category Name' });
+    if (!name || !/^[a-zA-Z]+$/.test(name)) {
+      return res.status(400).json({ error: 'Invalid Category Name.' });
     }
 
     const [error, updatedCategory] = await asyncWrapper(
-      CategoriesModel.findByIdAndUpdate(id, { categoryName }, { new: true }),
+      CategoriesModel.findByIdAndUpdate(id, { name }, { new: true }),
     );
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: error.message });
     }
 
     if (!updatedCategory) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Category not found.' });
     }
 
     res.json(updatedCategory);
@@ -83,14 +76,14 @@ const CategoriesController = {
     const [error, deletedCategory] = await asyncWrapper(CategoriesModel.findByIdAndDelete(id));
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: error.message });
     }
 
     if (!deletedCategory) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: 'Category not found.' });
     }
 
-    res.json({ message: 'Category deleted successfully' });
+    res.json({ message: 'Category deleted successfully.' });
   },
 };
 
