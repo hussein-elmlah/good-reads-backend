@@ -148,7 +148,6 @@ const AuthorsController = {
 
 //     res.json({ popularAuthors });
 //   },
-=======
   async getAuthor(req, res) {
     const { id } = req.params;
 
