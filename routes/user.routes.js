@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const UserController = require('../controllers/user.controllers');
 const asyncWrapper = require('../lib/async-wrapper');
-const generateToken = require('../utils/jwtUtils');
+const { generateTokenUser } = require('../utils/jwtUtils');
 const { authenticateUser } = require('../middlewares/authentication');
 const { authorizeUser } = require('../middlewares/authorization');
 const uploadSingleImage = require('../middlewares/fileUploadMiddleware');
@@ -14,7 +14,7 @@ router.post('/register', uploadSingleImage, async (req, res, next) => {
     return next(err);
   }
   try {
-    const token = await generateToken(user);
+    const token = await generateTokenUser(user);
     console.log('created user successfully:\n', user);
     res.status(201).json({ user, token });
   } catch (error) {
