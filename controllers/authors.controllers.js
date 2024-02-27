@@ -116,7 +116,6 @@ const AuthorsController = {
     res.json({ message: 'Author deleted successfully' });
   },
 
-<<<<<<< HEAD
   //   getPopularAuthors: async (req, res, next) => {
   //     const [err, popularAuthors] = await asyncWrapper(Author.aggregate([
   //       {
@@ -149,7 +148,6 @@ const AuthorsController = {
 
 //     res.json({ popularAuthors });
 //   },
-=======
   async getAuthor(req, res) {
     const { id } = req.params;
 
@@ -167,7 +165,6 @@ const AuthorsController = {
 
     res.json(selectedAuthor);
   },
->>>>>>> d59cf58bf6d5597122a50203a1c1aacaa423d581
 };
 
 module.exports = AuthorsController;
