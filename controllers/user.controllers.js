@@ -1,6 +1,6 @@
 const User = require('../models/user.model');
 const CustomError = require('../lib/customError');
-const generateToken = require('../utils/jwtUtils');
+const { generateTokenUser } = require('../utils/jwtUtils');
 
 exports.register = async ({
   firstName, lastName, email, username, password, image,
@@ -34,7 +34,7 @@ exports.login = async ({ username, password }) => {
     if (!valid) {
       throw new CustomError('UN_Authenticated', 401);
     }
-    const token = await generateToken(user);
+    const token = await generateTokenUser(user);
     return token;
   } catch (error) {
     if (error instanceof CustomError) {
