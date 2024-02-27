@@ -68,3 +68,22 @@ exports.getUserBooks = async (userId, status, limit = 20, skip = 0) => {
     throw new CustomError(`Failed to get user's books: ${error.message}`, 500);
   }
 };
+
+exports.updateBookStatus = async (userId, bookId, status) => {
+  try {
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+
+    const bookIndex = user.books.findIndex((book) => book._id.toString() === bookId);
+    if (bookIndex === -1) {
+      throw new CustomError('Book not found for the user', 404);
+    }
+
+    user.books[bookIndex].status = status;
+    await user.save();
+  } catch (error) {
+    throw new CustomError(`Failed to update user's book status: ${error.message}`, 500);
+  }
+};

@@ -43,4 +43,20 @@ router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next)
   res.json(books);
 });
 
+router.put('/:bookId', authenticateUser, authorizeUser, async (req, res, next) => {
+  const userId = req.query.token;
+  const { bookId } = req.params;
+  const { status } = req.body;
+  console.log(userId);
+  console.log(bookId);
+  console.log(status);
+  const [err, updatedBook] = await asyncWrapper(
+    UserController.updateBookStatus(userId, bookId, status),
+  );
+  if (err) {
+    return next(err);
+  }
+  res.json(updatedBook);
+});
+
 module.exports = router;
