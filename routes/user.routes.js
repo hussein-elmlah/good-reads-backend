@@ -6,7 +6,7 @@ const { authenticateUser } = require('../middlewares/authentication');
 const { authorizeUser } = require('../middlewares/authorization');
 const uploadSingleImage = require('../middlewares/fileUploadMiddleware');
 
-router.post('/register', uploadSingleImage, async (req, res, next) => {
+router.post('/register', async (req, res, next) => {
   const { body, file } = req;
   console.log('file:\n', file);
   const [err, user] = await asyncWrapper(UserController.register({ ...body, image: file }));

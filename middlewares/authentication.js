@@ -41,6 +41,7 @@ const authenticateUser = async (req, res, next) => {
 };
 
 const authenticateAdmin = async (req, res, next) => {
+  console.log("Authenticating Admin");
   try {
     const { authorization: token } = req.headers;
 

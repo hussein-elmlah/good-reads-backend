@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(express.json());
 
 app.use(cors({
-  origin: '*',
+  origin: '*', // should be replaced with real origins in production.
   methods: ['GET', 'POST', 'PUT', 'patch', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
