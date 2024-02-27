@@ -24,4 +24,4 @@ const uploadSingleImage = multer({
   fileFilter,
 }).single('image');
 
-module.exports = uploadSingleImage;
+module.exports = uploadSingleImage; 
