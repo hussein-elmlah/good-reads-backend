@@ -52,6 +52,7 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 // Get books by status
 exports.getBooksByStatus = async ({ query: { status } }, res) => {
   const query = status ? { 'reviews.state': status } : {};
@@ -63,4 +64,3 @@ exports.getBooksByStatus = async ({ query: { status } }, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-

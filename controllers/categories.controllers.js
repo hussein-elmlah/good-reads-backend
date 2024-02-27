@@ -1,7 +1,6 @@
-// const express = require('express');
-// const CategoriesModel = require('../models/categories.model');
 const asyncWrapper = require('../lib/async-wrapper');
-const Category = require('../models/categories.model');
+const CategoriesModel = require('../models/categories.model');
+
 // module.exports = {
 //   async getCategories(req, res) {
 //     try {
@@ -24,7 +23,7 @@ const Category = require('../models/categories.model');
 
 const CategoriesController = {
   getAllCategories: async (req, res) => {
-    const [error, categories] = await asyncWrapper(Category.find());
+    const [error, categories] = await asyncWrapper(CategoriesModel.find());
 
     if (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -41,13 +40,17 @@ const CategoriesController = {
       return res.status(400).json({ error: 'Invalid Category Name' });
     }
 
-    const [error, savedCategory] = await asyncWrapper(Category.create({ categoryName }));
+    const [error, savedCategory] = await asyncWrapper(CategoriesModel.create({ categoryName }));
 
     if (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
 
     res.status(201).json(savedCategory);
+  },
+
+  getCategoryById: async (req, res) => {
+
   },
 
   updateCategory: async (req, res) => {
@@ -60,7 +63,7 @@ const CategoriesController = {
     }
 
     const [error, updatedCategory] = await asyncWrapper(
-      Category.findByIdAndUpdate(id, { categoryName }, { new: true }),
+      CategoriesModel.findByIdAndUpdate(id, { categoryName }, { new: true }),
     );
 
     if (error) {
@@ -77,7 +80,7 @@ const CategoriesController = {
   deleteCategory: async (req, res) => {
     const { id } = req.params;
 
-    const [error, deletedCategory] = await asyncWrapper(Category.findByIdAndDelete(id));
+    const [error, deletedCategory] = await asyncWrapper(CategoriesModel.findByIdAndDelete(id));
 
     if (error) {
       return res.status(500).json({ error: 'Internal Server Error' });
