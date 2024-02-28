@@ -48,5 +48,5 @@ adminSchema.methods.verifyPassword = async function verifyPassword(password) {
   return valid;
 };
 
-const AdminModel = mongoose.model('Admins', adminSchema);
-module.exports = AdminModel;
+const Admin = mongoose.model('Admin', adminSchema);
+module.exports = Admin;

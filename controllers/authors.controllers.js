@@ -1,19 +1,17 @@
-// authors.controller.js
-
-const express = require('express');
 const asyncWrapper = require('../lib/async-wrapper');
 const Author = require('../models/authors.model');
 
 const AuthorsController = {
-  getAllAuthors: async (req, res) => {
+  getAllAuthors: async (req, res, next) => {
     const [error, authors] = await asyncWrapper(Author.find());
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      next(500);
     }
 
     res.json(authors);
   },
+
   getAllAuthorsPaginated: async (req, res, next) => {
     const pageNumber = parseInt(req.query.pageNumber, 10) || 0;
     const limitSize = parseInt(req.query.limitSize, 10) || 5;
@@ -37,7 +35,7 @@ const AuthorsController = {
     res.json(authors);
   },
 
-  addAuthor: async (req, res) => {
+  addAuthor: async (req, res, next) => {
     const {
       firstName, lastName, dob, books, photo,
     } = req.body;
@@ -60,13 +58,13 @@ const AuthorsController = {
     );
 
     if (error) {
-      return res.status(500).json({ error: error.message || 'Internal Server Error' });
+      next(error);
     }
 
     res.status(201).json(savedAuthor);
   },
 
-  async updateAuthor(req, res) {
+  async updateAuthor(req, res, next) {
     const { id } = req.params;
     const {
       firstName, lastName, dob, books, photo,
@@ -90,7 +88,7 @@ const AuthorsController = {
     );
 
     if (error) {
-      return res.status(500).json({ error: error.message || 'Internal Server Error' });
+      next(error);
     }
 
     if (!updatedAuthor) {
@@ -100,13 +98,13 @@ const AuthorsController = {
     res.json(updatedAuthor);
   },
 
-  deleteAuthor: async (req, res) => {
+  deleteAuthor: async (req, res, next) => {
     const { id } = req.params;
 
     const [error, deletedAuthor] = await asyncWrapper(Author.findByIdAndDelete(id));
 
     if (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      next(error);
     }
 
     if (!deletedAuthor) {
@@ -116,39 +114,39 @@ const AuthorsController = {
     res.json({ message: 'Author deleted successfully' });
   },
 
-  //   getPopularAuthors: async (req, res, next) => {
-  //     const [err, popularAuthors] = await asyncWrapper(Author.aggregate([
-  //       {
-  //         $lookup: {
-  //           from: 'books',
-  //           localField: '_id',
-  //           foreignField: 'author',
-  //           as: 'books',
-  //         },
-  //       },
-  //       {
-  //         $project: {
-  //           _id: 1,
-  //           firstName: 1,
-  //           lastName: 1,
-  //           bookCount: { $size: '$books' },
-  //         },
-  //       },
-  //       {
-  //         $sort: { bookCount: -1 },
-  //       },
-  //       {
-  //         $limit: 3,
-  //       },
-  //     ]));
+  getPopularAuthors: async (req, res, next) => {
+    const [err, popularAuthors] = await asyncWrapper(Author.aggregate([
+      {
+        $lookup: {
+          from: 'books',
+          localField: '_id',
+          foreignField: 'author',
+          as: 'books',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          bookCount: { $size: '$books' },
+        },
+      },
+      {
+        $sort: { bookCount: -1 },
+      },
+      {
+        $limit: 3,
+      },
+    ]));
 
-  //     if (err) {
-  //       return next(err);
-  //     }
+    if (err) {
+      next(err);
+    }
 
-//     res.json({ popularAuthors });
-//   },
-  async getAuthor(req, res) {
+    res.json({ popularAuthors });
+  },
+  async getAuthor(req, res, next) {
     const { id } = req.params;
 
     const [error, selectedAuthor] = await asyncWrapper(
@@ -156,7 +154,7 @@ const AuthorsController = {
     );
 
     if (error) {
-      return res.status(500).json({ error: error.message || 'Internal Server Error' });
+      next(error);
     }
 
     if (!selectedAuthor) {

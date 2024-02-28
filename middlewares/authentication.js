@@ -13,22 +13,22 @@ const authenticateUser = async (req, res, next) => {
     const { authorization: token } = req.headers;
 
     if (!token) {
-      throw new CustomError('UN_Authenticated', 401);
+      throw new CustomError('Unauthenticated.', 401);
     }
 
     if (!JWT_SECRET) {
-      throw new Error('JWT_SECRET is not defined');
+      throw new Error('JWT secret is not defined.');
     }
 
     const decodedToken = await verifyAsync(token, JWT_SECRET);
     if (!decodedToken) {
-      throw new CustomError('Invalid token', 401);
+      throw new CustomError('Invalid token.', 401);
     }
 
     const user = await User.findById(decodedToken.id).exec();
 
     if (!user) {
-      throw new CustomError("Token's user not found", 401);
+      throw new CustomError('User not found.', 401);
     }
 
     req.user = user;

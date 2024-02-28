@@ -1,5 +1,3 @@
-// authors.model.js
-
 const mongoose = require('mongoose');
 const AutoIncrementFactory = require('mongoose-sequence');
 

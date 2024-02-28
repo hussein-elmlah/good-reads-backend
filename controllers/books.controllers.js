@@ -64,3 +64,7 @@ exports.getBooksByStatus = async ({ query: { status } }, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getPopularBooks = async (req, res) => {
+  
+};
