@@ -11,7 +11,7 @@ module.exports = {
       const admin = await AdminModel.findOne({ username: `${username}` });
 
       if (admin && await admin.verifyPassword(password)) {
-        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET_ADMIN, { expiresIn: '1d' });
+        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET_ADMIN, { expiresIn: '7d' });
         return res.json({ token });
       }
     } catch (err) {

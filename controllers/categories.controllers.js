@@ -1,43 +1,43 @@
 const asyncWrapper = require('../lib/async-wrapper');
-const CategoriesModel = require('../models/categories.model');
+const Category = require('../models/categories.model');
 
 const CategoriesController = {
-  getAllCategories: async (req, res) => {
-    const [error, categories] = await asyncWrapper(CategoriesModel.find());
+  getAllCategories: async (req, res, next) => {
+    const [error, categories] = await asyncWrapper(Category.find());
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      next(error);
     }
 
     res.json(categories);
   },
 
-  addCategory: async (req, res) => {
+  addCategory: async (req, res, next) => {
     const { name } = req.body;
 
     if (!name || !/^[a-zA-Z]+$/.test(name)) {
       return res.status(400).json({ error: 'Invalid Category Name.' });
     }
 
-    const [error, savedCategory] = await asyncWrapper(CategoriesModel.create({ name }));
+    const [error, savedCategory] = await asyncWrapper(Category.create({ name }));
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      next(error);
     }
 
     res.status(201).json(savedCategory);
   },
 
-  getCategoryById: async (req, res) => {
+  getCategoryById: async (req, res, next) => {
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid ID. ID must be a number.' });
+      return res.status(400).json({ error: 'Invalid category ID. ID must be a number.' });
     }
 
-    const [error, category] = await asyncWrapper(CategoriesModel.findById(req.params.id));
+    const [error, category] = await asyncWrapper(Category.findById(req.params.id));
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      next(error);
     }
 
     if (!category) {
@@ -47,7 +47,7 @@ const CategoriesController = {
     res.json(category);
   },
 
-  updateCategory: async (req, res) => {
+  updateCategory: async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
 
@@ -56,11 +56,11 @@ const CategoriesController = {
     }
 
     const [error, updatedCategory] = await asyncWrapper(
-      CategoriesModel.findByIdAndUpdate(id, { name }, { new: true }),
+      Category.findByIdAndUpdate(id, { name }, { new: true }),
     );
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      next(error);
     }
 
     if (!updatedCategory) {
@@ -70,13 +70,13 @@ const CategoriesController = {
     res.json(updatedCategory);
   },
 
-  deleteCategory: async (req, res) => {
+  deleteCategory: async (req, res, next) => {
     const { id } = req.params;
 
-    const [error, deletedCategory] = await asyncWrapper(CategoriesModel.findByIdAndDelete(id));
+    const [error, deletedCategory] = await asyncWrapper(Category.findByIdAndDelete(id));
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      next(error);
     }
 
     if (!deletedCategory) {
@@ -87,28 +87,28 @@ const CategoriesController = {
   },
 
   getPopularCategories: async (req, res, next) => {
-    const [err, popularCategories] = await asyncWrapper(CategoriesModel.aggregate([
-      {
-        $project: {
-          _id: 1,
-          firstName: 1,
-          lastName: 1,
-          bookCount: { $size: '$books' },
-        },
-      },
-      {
-        $sort: { bookCount: -1 },
-      },
-      {
-        $limit: 3,
-      },
-    ]));
+  //   const [error, popularCategories] = await asyncWrapper(Category.aggregate([
+  //     {
+  //       $project: {
+  //         _id: 1,
+  //         firstName: 1,
+  //         lastName: 1,
+  //         bookCount: { $size: '$books' },
+  //       },
+  //     },
+  //     {
+  //       $sort: { bookCount: -1 },
+  //     },
+  //     {
+  //       $limit: 3,
+  //     },
+  //   ]));
 
-    if (err) {
-      return next(err);
-    }
+  //   if (error) {
+  //     next(error);
+  //   }
 
-    res.json({ popularCategories });
+  //   res.json({ popularCategories });
   },
 };
 
