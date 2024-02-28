@@ -11,10 +11,10 @@ router.get('/', AuthorsController.getAllAuthors);
 router.get('/authorpage', AuthorsController.getAllAuthorsPaginated);
 router.post('/', authenticateAdmin, AuthorsController.addAuthor);
 
+router.get('/popular', AuthorsController.getPopularAuthors);
+
 router.get('/:id', AuthorsController.getAuthor);
 router.put('/:id', authenticateAdmin, AuthorsController.updateAuthor);
 router.delete('/:id', authenticateAdmin, AuthorsController.deleteAuthor);
-
-router.get('/popular', AuthorsController.getPopularAuthors);
 
 module.exports = router;
