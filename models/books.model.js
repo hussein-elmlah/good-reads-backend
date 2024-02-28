@@ -2,25 +2,48 @@ const mongoose = require('mongoose');
 const AutoIncrementFactory = require('mongoose-sequence');
 
 const AutoIncrement = AutoIncrementFactory(mongoose);
-const objectId = mongoose.Schema.Types.ObjectId;
 
 const bookSchema = new mongoose.Schema({
   _id: {
     type: Number,
   },
-  img: { type: String, required: true },
-  name: { type: String, required: true },
-  author_id: { type: Number, ref: 'authors', required: false },
-  author: { type: mongoose.Schema.Types.Mixed },
-  category_id: { type: Number, ref: 'categories', required: false },
-  category: { type: mongoose.Schema.Types.Mixed },
+  img: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  author_id: {
+    type: Number,
+    ref: 'authors',
+    required: false,
+  },
+  author: {
+    type: mongoose.Schema.Types.Mixed,
+  },
+  category_id: {
+    type: Number,
+    ref: 'categories',
+    required: false,
+  },
+  category: {
+    type: mongoose.Schema.Types.Mixed,
+  },
   reviews: [{
-    user_id: { type: Number, ref: 'user' },
-    rate: { type: Number, default: 0 },
+    user_id: {
+      type: Number,
+      ref: 'user',
+    },
+    rate: {
+      type: Number,
+      default: 0,
+    },
     comment: [],
     state: {
       type: String,
-      enum: ['currently Read', 'Want to Read', 'Read'],
+      enum: ['currently read', 'Want to read', 'Read'],
     },
   }],
   createdAt: {
@@ -32,7 +55,8 @@ const bookSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 bookSchema.plugin(AutoIncrement, { id: 'book_id_counter', inc_field: '_id' });
 
-const bookModel = mongoose.model('books', bookSchema);
-module.exports = bookModel;
+const Book = mongoose.model('Book', bookSchema);
+module.exports = Book;
