@@ -54,11 +54,15 @@ exports.deleteBook = async (req, res) => {
 };
 
 // Get books by status
-exports.getBooksByStatus = async ({ query: { status } }, res) => {
-  const query = status ? { 'reviews.state': status } : {};
+exports.getBooksByStatus = async (req, res) => {
+  const { status } = req.query;
+  const query = status ? { 'reviews.state': { $regex: `.*${status}.*`, $options: 'i' } } : {};
 
   try {
     const books = await Book.find(query);
+    if (books.length === 0) {
+      return res.status(404).json({ message: `No books with status '${status}' were found.` });
+    }
     res.json(books);
   } catch (err) {
     res.status(500).json({ message: err.message });

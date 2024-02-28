@@ -20,7 +20,7 @@ const bookSchema = new mongoose.Schema({
     comment: [],
     state: {
       type: String,
-      enum: ['currently Read', 'Want to Read', 'Read'],
+      enum: ['currently read', 'Want to read', 'Read'],
     },
   }],
   createdAt: {
