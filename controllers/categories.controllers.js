@@ -85,6 +85,31 @@ const CategoriesController = {
 
     res.json({ message: 'Category deleted successfully.' });
   },
+
+  getPopularCategories: async (req, res, next) => {
+    const [err, popularCategories] = await asyncWrapper(CategoriesModel.aggregate([
+      {
+        $project: {
+          _id: 1,
+          firstName: 1,
+          lastName: 1,
+          bookCount: { $size: '$books' },
+        },
+      },
+      {
+        $sort: { bookCount: -1 },
+      },
+      {
+        $limit: 3,
+      },
+    ]));
+
+    if (err) {
+      return next(err);
+    }
+
+    res.json({ popularCategories });
+  },
 };
 
 module.exports = CategoriesController;

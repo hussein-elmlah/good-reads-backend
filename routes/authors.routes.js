@@ -9,10 +9,12 @@ router.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 router.get('/', AuthorsController.getAllAuthors);
 router.get('/authorpage', AuthorsController.getAllAuthorsPaginated);
-router.get('/:id', AuthorsController.getAuthor);
-// router.get('/getPopularAuthors', AuthorsController.getPopularAuthors);
 router.post('/', authenticateAdmin, AuthorsController.addAuthor);
+
+router.get('/:id', AuthorsController.getAuthor);
 router.put('/:id', authenticateAdmin, AuthorsController.updateAuthor);
 router.delete('/:id', authenticateAdmin, AuthorsController.deleteAuthor);
+
+router.get('/popular', AuthorsController.getPopularAuthors);
 
 module.exports = router;
