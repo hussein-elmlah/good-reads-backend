@@ -12,10 +12,8 @@ const CategoriesController = {
     res.json(categories);
   },
 
-  addCategory: async (req, res) => {
-    console.log('hhi');
+  addCategory: async (req, res, next) => {
     const { name } = req.body;
-    console.log(req.body);
 
     if (!name || !/^[a-zA-Z]+$/.test(name)) {
       return res.status(400).json({ error: 'Invalid Category Name.' });
@@ -49,10 +47,10 @@ const CategoriesController = {
     res.json(category);
   },
 
-  updateCategory: async (req, res) => {
-    if (!req.admin) {
-      return res.status(401).json({ error: 'Unauthorized. Please log in.' });
-    }
+  updateCategory: async (req, res, next) => {
+    // if (!req.admin) {
+    //   return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+    // }
     const { id } = req.params;
     const { name } = req.body;
 

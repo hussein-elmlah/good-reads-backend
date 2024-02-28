@@ -6,7 +6,7 @@ const AuthorsController = {
     const [error, authors] = await asyncWrapper(Author.find());
 
     if (error) {
-      next(500);
+      next(error);
     }
 
     res.json(authors);
