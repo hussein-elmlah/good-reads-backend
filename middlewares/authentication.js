@@ -3,7 +3,7 @@ const util = require('util');
 const User = require('../models/user.model');
 const CustomError = require('../lib/customError');
 
-const { JWT_SECRET, JWT_SECRET_Admin } = process.env;
+const { JWT_SECRET, JWT_SECRET_ADMIN } = process.env;
 
 const verifyAsync = util.promisify(jwt.verify);
 
@@ -12,22 +12,22 @@ const authenticateUser = async (req, res, next) => {
     const { authorization: token } = req.headers;
 
     if (!token) {
-      throw new CustomError('UN_Authenticated', 401);
+      throw new CustomError('Unauthenticated.', 401);
     }
 
     if (!JWT_SECRET) {
-      throw new Error('JWT_SECRET is not defined');
+      throw new Error('JWT secret is not defined.');
     }
 
     const decodedToken = await verifyAsync(token, JWT_SECRET);
     if (!decodedToken) {
-      throw new CustomError('Invalid token', 401);
+      throw new CustomError('Invalid token.', 401);
     }
 
     const user = await User.findById(decodedToken.id).exec();
 
     if (!user) {
-      throw new CustomError("Token's user not found", 401);
+      throw new CustomError('User not found.', 401);
     }
 
     req.user = user;
@@ -41,27 +41,26 @@ const authenticateUser = async (req, res, next) => {
 };
 
 const authenticateAdmin = async (req, res, next) => {
-  console.log("Authenticating Admin");
   try {
     const { authorization: token } = req.headers;
 
     if (!token) {
-      throw new CustomError('UN_Authenticated', 401);
+      throw new CustomError('Unauthenticated.', 401);
     }
 
-    if (!JWT_SECRET_Admin) {
-      throw new Error('JWT_SECRET_Admin is not defined');
+    if (!JWT_SECRET_ADMIN) {
+      throw new Error('JWT admin secret is not defined.');
     }
 
-    const decodedToken = await verifyAsync(token, JWT_SECRET_Admin);
+    const decodedToken = await verifyAsync(token, JWT_SECRET_ADMIN);
     if (!decodedToken) {
-      throw new CustomError('Invalid token', 401);
+      throw new CustomError('Invalid token.', 401);
     }
 
     const user = await User.findById(decodedToken.id).exec();
 
     if (!user) {
-      throw new CustomError("Token's user not found", 401);
+      throw new CustomError('Admin not found.', 401);
     }
 
     req.user = user;
@@ -74,7 +73,6 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
-
 module.exports = {
-  authenticateUser, authenticateAdmin
+  authenticateUser, authenticateAdmin,
 };

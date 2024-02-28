@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const AdminModel = require('../models/admin.model');
-const { JWT_SECRET_Admin } = process.env;
+
+const { JWT_SECRET_ADMIN } = process.env;
 
 module.exports = {
   async login(req, res, next) {
@@ -10,7 +11,7 @@ module.exports = {
       const admin = await AdminModel.findOne({ username: `${username}` });
 
       if (admin && await admin.verifyPassword(password)) {
-        const token = jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET_Admin, { expiresIn: '1d' });
+        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET_ADMIN, { expiresIn: '1d' });
         return res.json({ token });
       }
     } catch (err) {
