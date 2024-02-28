@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const AdminModel = require('../models/admin.model');
+const Admin = require('../models/admin.model');
 
 const { JWT_SECRET_ADMIN } = process.env;
 
@@ -8,7 +8,7 @@ module.exports = {
     const { username, password } = req.body;
 
     try {
-      const admin = await AdminModel.findOne({ username: `${username}` });
+      const admin = await Admin.findOne({ username: `${username}` });
 
       if (admin && await admin.verifyPassword(password)) {
         const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET_ADMIN, { expiresIn: '7d' });
@@ -30,9 +30,13 @@ module.exports = {
     }
 
     try {
-      const newUser = await AdminModel.create({ username, password });
+      const newUser = await Admin.create({ username, password });
       res.status(201).json(newUser);
     } catch (err) {
+      if (err.code === 11000 && err.keyPattern.username) {
+        return res.status(409).json({ error: 'Username already exists, please choose a different one.' });
+      }
+
       err.status = 400;
       next(err);
     }
