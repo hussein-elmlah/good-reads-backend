@@ -69,6 +69,26 @@ exports.getBooksByStatus = async (req, res) => {
   }
 };
 
+//Search books
+// GET /api/books/search?query=searchTerm
+exports.SearchBooks= async (req, res) => {
+  const query = req.query.query;
+
+  try {
+    const books = await Book.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } }, // Case-insensitive search by title
+        { author: { $regex: query, $options: 'i' } }, // Case-insensitive search by author
+        // Add more fields to search if needed
+      ]
+    });
+
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 exports.getPopularBooks = async (req, res) => {
   
 };
