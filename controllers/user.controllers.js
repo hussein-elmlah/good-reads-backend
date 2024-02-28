@@ -69,9 +69,9 @@ exports.getUserBooks = async (userId, status, limit = 20, skip = 0) => {
   }
 };
 
-exports.updateBookStatus = async (userId, bookId, status) => {
+exports.updateUserBook = async (id, bookId, book_status, rating) => {
   try {
-    const user = await User.findById(userId).exec();
+    const user = await User.findById(id).exec();
     if (!user) {
       throw new CustomError('User not found', 404);
     }
@@ -81,8 +81,21 @@ exports.updateBookStatus = async (userId, bookId, status) => {
       throw new CustomError('Book not found for the user', 404);
     }
 
-    user.books[bookIndex].status = status;
-    await user.save();
+    if (!rating || !book_status) {
+      throw new CustomError('Please provide rating or book status to update', 400);
+    }
+
+    const updateFields = {};
+    if (rating !== undefined) {
+      updateFields[`books.${bookIndex}.rating`] = rating;
+    }
+    if (book_status !== undefined) {
+      updateFields[`books.${bookIndex}.book_status`] = book_status;
+    }
+
+    await User.updateOne({ _id: id }, { $set: updateFields });
+
+    return { success: true };
   } catch (error) {
     throw new CustomError(`Failed to update user's book status: ${error.message}`, 500);
   }
