@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const util = require('util');
 const User = require('../models/user.model');
+const Admin = require('../models/admin.model');
 const CustomError = require('../lib/customError');
 
 const { JWT_SECRET, JWT_SECRET_ADMIN } = process.env;
@@ -57,13 +58,13 @@ const authenticateAdmin = async (req, res, next) => {
       throw new CustomError('Invalid token.', 401);
     }
 
-    const user = await User.findById(decodedToken.id).exec();
+    const admin = await Admin.findById(decodedToken.id).exec();
 
-    if (!user) {
+    if (!admin) {
       throw new CustomError('Admin not found.', 401);
     }
 
-    req.user = user;
+    req.admin = admin;
     next();
   } catch (error) {
     if (error instanceof CustomError) {
