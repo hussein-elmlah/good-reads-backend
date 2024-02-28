@@ -13,7 +13,9 @@ const CategoriesController = {
   },
 
   addCategory: async (req, res) => {
+    console.log('hhi');
     const { name } = req.body;
+    console.log(req.body);
 
     if (!name || !/^[a-zA-Z]+$/.test(name)) {
       return res.status(400).json({ error: 'Invalid Category Name.' });
@@ -48,6 +50,9 @@ const CategoriesController = {
   },
 
   updateCategory: async (req, res) => {
+    if (!req.admin) {
+      return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+    }
     const { id } = req.params;
     const { name } = req.body;
 
@@ -71,6 +76,7 @@ const CategoriesController = {
   },
 
   deleteCategory: async (req, res) => {
+    console.log(req.user, '=========================================================================)');
     const { id } = req.params;
 
     const [error, deletedCategory] = await asyncWrapper(CategoriesModel.findByIdAndDelete(id));
