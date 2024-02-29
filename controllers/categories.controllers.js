@@ -1,5 +1,6 @@
 const asyncWrapper = require('../lib/async-wrapper');
 const Category = require('../models/categories.model');
+const Book = require('../models/books.model');
 
 const CategoriesController = {
   getAllCategories: async (req, res, next) => {
@@ -12,7 +13,7 @@ const CategoriesController = {
     res.json(categories);
   },
 
-  addCategory: async (req, res, next) => {
+  addCategory: async (req, res) => {
     const { name } = req.body;
 
     if (!name || !/^[a-zA-Z]+$/.test(name)) {
@@ -47,10 +48,10 @@ const CategoriesController = {
     res.json(category);
   },
 
-  updateCategory: async (req, res, next) => {
-    // if (!req.admin) {
-    //   return res.status(401).json({ error: 'Unauthorized. Please log in.' });
-    // }
+  updateCategory: async (req, res) => {
+    if (!req.admin) {
+      return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+    }
     const { id } = req.params;
     const { name } = req.body;
 
@@ -74,7 +75,6 @@ const CategoriesController = {
   },
 
   deleteCategory: async (req, res) => {
-    console.log(req.user, '=========================================================================)');
     const { id } = req.params;
 
     const [error, deletedCategory] = await asyncWrapper(Category.findByIdAndDelete(id));
@@ -91,28 +91,44 @@ const CategoriesController = {
   },
 
   getPopularCategories: async (req, res, next) => {
-  //   const [error, popularCategories] = await asyncWrapper(Category.aggregate([
-  //     {
-  //       $project: {
-  //         _id: 1,
-  //         firstName: 1,
-  //         lastName: 1,
-  //         bookCount: { $size: '$books' },
-  //       },
-  //     },
-  //     {
-  //       $sort: { bookCount: -1 },
-  //     },
-  //     {
-  //       $limit: 3,
-  //     },
-  //   ]));
+    try {
+      const popularCategories = await Book.aggregate([
+        {
+          $unwind: '$category', // Unwind the category array
+        },
+        {
+          $group: {
+            _id: '$category', // Grouping by the category field directly
+            count: { $sum: 1 }, // Counting the number of books in each category
+          },
+        },
+        {
+          $sort: { count: -1 }, // Sorting by count in descending order
+        },
+        {
+          $lookup: {
+            from: 'categories', // The name of the collection containing categories
+            localField: '_id', // Field from the previous stage
+            foreignField: 'name', // Field from the categories collection
+            as: 'category', // Name of the field to store the matched category documents
+          },
+        },
+        {
+          $unwind: '$category', // Unwind the category array
+        },
+        {
+          $project: {
+            _id: 0,
+            name: '$category.name', // Project only the name field
+            count: 1,
+          },
+        },
+      ]);
 
-    //   if (error) {
-    //     next(error);
-    //   }
-
-  //   res.json({ popularCategories });
+      res.json({ popularCategories });
+    } catch (error) {
+      next(error);
+    }
   },
 };
 
