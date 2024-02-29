@@ -94,32 +94,32 @@ const CategoriesController = {
     try {
       const popularCategories = await Book.aggregate([
         {
-          $unwind: '$category', // Unwind the category array
+          $unwind: '$category',
         },
         {
           $group: {
-            _id: '$category', // Grouping by the category field directly
-            count: { $sum: 1 }, // Counting the number of books in each category
+            _id: '$category',
+            count: { $sum: 1 },
           },
         },
         {
-          $sort: { count: -1 }, // Sorting by count in descending order
+          $sort: { count: -1 },
         },
         {
           $lookup: {
-            from: 'categories', // The name of the collection containing categories
-            localField: '_id', // Field from the previous stage
-            foreignField: 'name', // Field from the categories collection
-            as: 'category', // Name of the field to store the matched category documents
+            from: 'categories',
+            localField: '_id',
+            foreignField: 'name',
+            as: 'category',
           },
         },
         {
-          $unwind: '$category', // Unwind the category array
+          $unwind: '$category',
         },
         {
           $project: {
             _id: 0,
-            name: '$category.name', // Project only the name field
+            name: '$category.name',
             count: 1,
           },
         },
