@@ -124,8 +124,9 @@ const CategoriesController = {
           },
         },
       ]);
+      const categoriesNames = popularCategories.map((category) => category.name);
 
-      res.json({ popularCategories });
+      res.json(categoriesNames);
     } catch (error) {
       next(error);
     }
