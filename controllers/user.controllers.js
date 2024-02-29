@@ -81,7 +81,7 @@ exports.updateUserBook = async (id, bookId, book_status, rating) => {
       throw new CustomError('Book not found for the user', 404);
     }
 
-    if (!rating || !book_status) {
+    if (!rating && !book_status) {
       throw new CustomError('Please provide rating or book status to update', 400);
     }
 
