@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const fs = require('fs');
 const path = require('path');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
@@ -10,6 +11,12 @@ require('dotenv').config();
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+const uploadFolder = 'uploads/';
+if (!fs.existsSync(uploadFolder)) {
+  fs.mkdirSync(uploadFolder);
+}
 
 app.use(helmet());
 app.use(express.json());

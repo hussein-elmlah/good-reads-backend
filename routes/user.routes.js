@@ -4,17 +4,16 @@ const asyncWrapper = require('../lib/async-wrapper');
 const { generateTokenUser } = require('../utils/jwtUtils');
 const { authenticateUser } = require('../middlewares/authentication');
 const { authorizeUser } = require('../middlewares/authorization');
+const uploadSingleImage = require('../middlewares/fileUploadMiddleware');
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', uploadSingleImage, async (req, res, next) => {
   const { body, file } = req;
-  console.log('file:\n', file);
   const [err, user] = await asyncWrapper(UserController.register({ ...body, image: file }));
   if (err) {
     return next(err);
   }
   try {
     const token = await generateTokenUser(user);
-    console.log('created user successfully:\n', user);
     res.status(201).json({ user, token });
   } catch (error) {
     return next(error);
