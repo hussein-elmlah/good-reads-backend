@@ -1,5 +1,6 @@
 const asyncWrapper = require('../lib/async-wrapper');
 const Author = require('../models/authors.model');
+const Book = require('../models/books.model');
 
 const AuthorsController = {
   getAllAuthors: async (req, res, next) => {
@@ -114,39 +115,6 @@ const AuthorsController = {
     res.json({ message: 'Author deleted successfully' });
   },
 
-  getPopularAuthors: async (req, res, next) => {
-    const [err, popularAuthors] = await asyncWrapper(Author.aggregate([
-      {
-        $lookup: {
-          from: 'books',
-          localField: '_id',
-          foreignField: 'author',
-          as: 'books',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          firstName: 1,
-          lastName: 1,
-          bookCount: { $size: '$books' },
-        },
-      },
-      {
-        $sort: { bookCount: -1 },
-      },
-      {
-        $limit: 3,
-      },
-    ]));
-
-    if (err) {
-      next(err);
-    }
-
-    res.json({ popularAuthors });
-  },
-
   async getAuthor(req, res, next) {
     const { id } = req.params;
 
@@ -163,6 +131,33 @@ const AuthorsController = {
     }
 
     res.json(selectedAuthor);
+  },
+
+  getPopularAuthors: async (req, res, next) => {
+    try {
+      const popularAuthors = await Book.aggregate([
+        {
+          $group: {
+            _id: '$author',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { count: -1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: '$_id',
+            count: 1,
+          },
+        },
+      ]);
+
+      res.json({ popularAuthors });
+    } catch (error) {
+      next(error);
+    }
   },
 };
 
