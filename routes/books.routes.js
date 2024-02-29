@@ -6,7 +6,9 @@ router.get('/', BooksController.getAllBooks);
 router.get('/', BooksController.getBooksByStatus);
 router.post('/', authenticateAdmin, BooksController.createBook);
 
+
 router.get('/popular', BooksController.getPopularBooks);
+router.get('/search',BooksController.SearchBooks);
 
 router.get('/:id', BooksController.getBookById);
 router.put('/:id', authenticateAdmin, BooksController.updateBook);

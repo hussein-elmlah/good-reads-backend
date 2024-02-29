@@ -4,6 +4,9 @@ const AutoIncrementFactory = require('mongoose-sequence');
 const AutoIncrement = AutoIncrementFactory(mongoose);
 
 const categorySchema = new mongoose.Schema({
+  _id: {
+    type: Number,
+  },
   name: {
     type: String,
     required: true,
@@ -12,17 +15,12 @@ const categorySchema = new mongoose.Schema({
       validator(value) {
         return /^[a-zA-Z]+$/.test(value);
       },
-      message: (props) => `${props.value} is an invalid Category Name`,
+      message: (props) => `${props.value} is an invalid category name`,
     },
-  },
-  _id: {
-    type: Number,
   },
 });
 
-// Use mongoose-sequence to auto-increment _id
 categorySchema.plugin(AutoIncrement, { id: 'category_id_counter', inc_field: '_id' });
 
 const Category = mongoose.model('Category', categorySchema);
-
 module.exports = Category;

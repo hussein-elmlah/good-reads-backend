@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 const AutoIncrementFactory = require('mongoose-sequence');
 
-const { Schema } = mongoose;
-
 const AutoIncrement = AutoIncrementFactory(mongoose);
 
-const authorSchema = new Schema({
+const authorSchema = new mongoose.Schema({
   _id: {
     type: Number,
   },
@@ -41,5 +39,4 @@ const authorSchema = new Schema({
 authorSchema.plugin(AutoIncrement, { id: 'author_id_counter', inc_field: '_id' });
 
 const Author = mongoose.model('Author', authorSchema);
-
 module.exports = Author;

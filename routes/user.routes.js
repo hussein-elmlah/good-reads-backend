@@ -4,7 +4,6 @@ const asyncWrapper = require('../lib/async-wrapper');
 const { generateTokenUser } = require('../utils/jwtUtils');
 const { authenticateUser } = require('../middlewares/authentication');
 const { authorizeUser } = require('../middlewares/authorization');
-const uploadSingleImage = require('../middlewares/fileUploadMiddleware');
 
 router.post('/register', async (req, res, next) => {
   const { body, file } = req;
@@ -43,15 +42,11 @@ router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next)
   res.json(books);
 });
 
-router.put('/:bookId', authenticateUser, authorizeUser, async (req, res, next) => {
-  const userId = req.query.token;
-  const { bookId } = req.params;
-  const { status } = req.body;
-  console.log(userId);
-  console.log(bookId);
-  console.log(status);
+router.put('/:id/:bookId', async (req, res, next) => {
+  const { id: userId, bookId } = req.params;
+  const { book_status, rating } = req.body;
   const [err, updatedBook] = await asyncWrapper(
-    UserController.updateBookStatus(userId, bookId, status),
+    UserController.updateUserBook(userId, bookId, book_status, rating),
   );
   if (err) {
     return next(err);
