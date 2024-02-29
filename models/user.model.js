@@ -66,8 +66,8 @@ const userSchema = new mongoose.Schema(
         },
         book_status: {
           type: String,
-          enum: ['read', 'want to Read', 'currently reading'],
-          default: 'want to Read',
+          enum: ['read', 'toRead', 'reading'],
+          default: 'toRead',
         },
         rating: {
           type: Number,
