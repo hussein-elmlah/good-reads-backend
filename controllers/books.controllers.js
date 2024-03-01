@@ -21,14 +21,15 @@ exports.getAllBooks = async (req, res, next) => {
 
 exports.getBookById = async (req, res, next) => {
   try {
-    if (!req.params.id) {
-      return res.status(500).json({ message: 'Invalid URL' });
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid book ID. ID must be a number.' });
     }
 
-    const book = await Book.findById(req.params.id);
+    const book = await Book.findById(id);
 
     if (!book) {
-      return res.status(404).json({ message: 'Book not found' });
+      return res.status(404).json({ message: 'Book not found.' });
     }
 
     res.json(book);
@@ -50,7 +51,7 @@ exports.updateBook = async (req, res) => {
 exports.deleteBook = async (req, res, next) => {
   try {
     await Book.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Book deleted successfully' });
+    res.json({ message: 'Book deleted successfully.' });
   } catch (err) {
     next(err);
   }

@@ -116,11 +116,12 @@ const AuthorsController = {
   },
 
   async getAuthor(req, res, next) {
-    const { id } = req.params;
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid author ID. ID must be a number.' });
+    }
 
-    const [error, selectedAuthor] = await asyncWrapper(
-      Author.findById(id),
-    );
+    const [error, selectedAuthor] = await asyncWrapper(Author.findById(id));
 
     if (error) {
       next(error);
