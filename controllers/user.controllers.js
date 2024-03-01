@@ -100,3 +100,29 @@ exports.updateUserBook = async (id, bookId, book_status, rating) => {
     throw new CustomError(`Failed to update user's book status: ${error.message}`, 500);
   }
 };
+
+exports.updateUserBooks = async (id, books) => {
+  try {
+    const user = await User.findById(id).exec();
+    if (!user) {
+      throw new CustomError('User not found', 404);
+    }
+    const existingBooks = user.books || [];
+    books.forEach((newBook) => {
+      const existingBookIndex = existingBooks.findIndex((book) => book._id === newBook._id);
+
+      if (existingBookIndex !== -1) {
+        existingBooks[existingBookIndex] = newBook;
+      } else {
+        existingBooks.push(newBook);
+      }
+    });
+
+    await User.updateOne({ _id: id }, { $set: { books: existingBooks } });
+
+    return { success: true };
+  } catch (error) {
+    throw new CustomError(`Failed to update user's books: ${error.message}`, 500);
+  }
+};
+

@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(cors({
   origin: '*', // should be replaced with real origins in production.
-  methods: ['GET', 'POST', 'PUT', 'patch', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'token'],
   credentials: true,
 }));

@@ -41,7 +41,7 @@ router.get('/:id/books', authenticateUser, authorizeUser, async (req, res, next)
   res.json(books);
 });
 
-router.put('/:id/:bookId', async (req, res, next) => {
+router.put('/:id/:bookId', authenticateUser, authorizeUser, async (req, res, next) => {
   const { id: userId, bookId } = req.params;
   const { book_status, rating } = req.body;
   const [err, updatedBook] = await asyncWrapper(
@@ -51,6 +51,18 @@ router.put('/:id/:bookId', async (req, res, next) => {
     return next(err);
   }
   res.json(updatedBook);
+});
+
+router.patch('/:id/books', authenticateUser, authorizeUser, async (req, res, next) => {
+  const { id: userId } = req.params;
+  const { books } = req.body;
+  const [err, updatedBooks] = await asyncWrapper(
+    UserController.updateUserBooks(userId, books),
+  );
+  if (err) {
+    return next(err);
+  }
+  res.json(updatedBooks);
 });
 
 module.exports = router;
