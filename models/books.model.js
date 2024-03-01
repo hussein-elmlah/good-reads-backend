@@ -48,7 +48,9 @@ const bookSchema = new mongoose.Schema({
       max: 5,
       default: 0,
     },
-    comment: [],
+    comment: {
+      type: String,
+    },
   }],
   createdAt: {
     type: Date,
