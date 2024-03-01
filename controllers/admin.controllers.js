@@ -7,6 +7,10 @@ module.exports = {
   async login(req, res, next) {
     const { username, password } = req.body;
 
+    if (!username || !password) {
+      res.status(400).json({ error: 'Must provide username and password for login.' });
+    }
+
     try {
       const admin = await Admin.findOne({ username: `${username}` });
 
@@ -15,11 +19,10 @@ module.exports = {
         return res.json({ token });
       }
     } catch (err) {
-      err.status = 400;
       next(err);
     }
 
-    res.status(404).json({ error: 'Username or password incorrect.' });
+    res.status(401).json({ error: 'Username or password incorrect.' });
   },
 
   async register(req, res, next) {
@@ -36,7 +39,6 @@ module.exports = {
       if (err.code === 11000 && err.keyPattern.username) {
         return res.status(409).json({ error: 'Username already exists, please choose a different one.' });
       }
-
       err.status = 400;
       next(err);
     }
