@@ -138,28 +138,28 @@ const AuthorsController = {
       const popularAuthors = await Book.aggregate([
         {
           $group: {
-            _id: '$author',
-            count: { $sum: 1 },
+            _id: '$author_id',
           },
         },
         {
-          $sort: { count: -1 },
-        },
-        {
-          $project: {
-            _id: 0,
-            name: '$_id',
+          $lookup: {
+            from: 'authors',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'author',
           },
         },
       ]);
 
-      const authorNames = popularAuthors.map((author) => author.name);
+      // Extract authors from the popularAuthors result
+      const authorsArray = popularAuthors.map((item) => item.author).flat();
 
-      res.json(authorNames);
+      res.json(authorsArray);
     } catch (error) {
       next(error);
     }
   },
+
 };
 
 module.exports = AuthorsController;
