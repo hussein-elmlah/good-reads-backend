@@ -85,7 +85,7 @@ exports.getPopularBooks = async (req, res, next) => {
   const [error, books] = await asyncWrapper(Book.find()
     .sort({ rating: -1 })
     .limit(8)
-    .select('name rating'));
+    .select('img name rating author category'));
 
   if (error) {
     next(error);
