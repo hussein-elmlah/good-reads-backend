@@ -21,15 +21,22 @@ exports.getAllBooks = async (req, res, next) => {
 
 exports.getBookById = async (req, res, next) => {
   try {
+    if (!req.params.id) {
+      return res.status(500).json({ message: 'Invalid URL' });
+    }
+
     const book = await Book.findById(req.params.id);
+
     if (!book) {
       return res.status(404).json({ message: 'Book not found' });
     }
+
     res.json(book);
   } catch (err) {
     next(err);
   }
 };
+
 
 exports.updateBook = async (req, res) => {
   try {
