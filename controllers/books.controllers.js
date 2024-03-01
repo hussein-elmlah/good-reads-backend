@@ -1,6 +1,6 @@
 const Book = require('../models/books.model');
+const asyncWrapper = require('../lib/async-wrapper');
 
-// Create a new book
 exports.createBook = async (req, res) => {
   try {
     const newBook = await Book.create(req.body);
@@ -10,18 +10,16 @@ exports.createBook = async (req, res) => {
   }
 };
 
-// Get all books
-exports.getAllBooks = async (req, res) => {
+exports.getAllBooks = async (req, res, next) => {
   try {
     const books = await Book.find();
     res.json(books);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
-// Get a single book by ID
-exports.getBookById = async (req, res) => {
+exports.getBookById = async (req, res, next) => {
   try {
     const book = await Book.findById(req.params.id);
     if (!book) {
@@ -29,11 +27,10 @@ exports.getBookById = async (req, res) => {
     }
     res.json(book);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
-// Update a book
 exports.updateBook = async (req, res) => {
   try {
     const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -43,18 +40,16 @@ exports.updateBook = async (req, res) => {
   }
 };
 
-// Delete a book
-exports.deleteBook = async (req, res) => {
+exports.deleteBook = async (req, res, next) => {
   try {
     await Book.findByIdAndDelete(req.params.id);
     res.json({ message: 'Book deleted successfully' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
-// Get books by status
-exports.getBooksByStatus = async (req, res) => {
+exports.getBooksByStatus = async (req, res, next) => {
   const { status } = req.query;
   const query = status ? { 'reviews.state': { $regex: `.*${status}.*`, $options: 'i' } } : {};
 
@@ -65,30 +60,36 @@ exports.getBooksByStatus = async (req, res) => {
     }
     res.json(books);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 
-//Search books
-// GET /api/books/search?query=searchTerm
-exports.SearchBooks= async (req, res) => {
-  const query = req.query.query;
+exports.SearchBooks = async (req, res, next) => {
+  const { query } = req.query;
 
   try {
     const books = await Book.find({
       $or: [
-        { name: { $regex: query, $options: 'i' } }, // Case-insensitive search by title
-        { author: { $regex: query, $options: 'i' } }, // Case-insensitive search by author
-        // Add more fields to search if needed
-      ]
+        { name: { $regex: query, $options: 'i' } },
+        { author: { $regex: query, $options: 'i' } },
+      ],
     });
 
     res.json(books);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
-exports.getPopularBooks = async (req, res) => {
-  
+
+exports.getPopularBooks = async (req, res, next) => {
+  const [error, books] = await asyncWrapper(Book.find()
+    .sort({ rating: -1 })
+    .limit(8)
+    .select('name rating'));
+
+  if (error) {
+    next(error);
+  }
+
+  res.json(books);
 };

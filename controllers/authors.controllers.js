@@ -149,12 +149,13 @@ const AuthorsController = {
           $project: {
             _id: 0,
             name: '$_id',
-            count: 1,
           },
         },
       ]);
 
-      res.json({ popularAuthors });
+      const authorNames = popularAuthors.map((author) => author.name);
+
+      res.json(authorNames);
     } catch (error) {
       next(error);
     }
