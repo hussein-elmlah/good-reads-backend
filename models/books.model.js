@@ -42,17 +42,13 @@ const bookSchema = new mongoose.Schema({
       type: Number,
       ref: 'user',
     },
-    rate: {
+    rating: {
       type: Number,
       min: 0,
       max: 5,
       default: 0,
     },
     comment: [],
-    state: {
-      type: String,
-      enum: ['currently read', 'Want to read', 'Read'],
-    },
   }],
   createdAt: {
     type: Date,
