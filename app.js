@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
@@ -6,23 +7,21 @@ const fs = require('fs');
 const path = require('path');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
-require('dotenv').config();
 
 const app = express();
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'uploads')));
 
 const uploadFolder = 'uploads/';
 if (!fs.existsSync(uploadFolder)) {
   fs.mkdirSync(uploadFolder);
 }
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(helmet());
 app.use(express.json());
 
 app.use(cors({
-  origin: '*',
+  origin: '*', // Origin '*' should be changed for production.
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'token'],
   credentials: true,
@@ -36,8 +35,13 @@ app.get('*', (req, res) => {
 
 app.use(errorHandler);
 
-process.on('uncaughtException', (err) => {
-  console.log('Uncaught exception occurred:\n', err);
+process.on('uncaughtException', (exception) => {
+  console.log('Uncaught exception occurred:\n', exception);
+  // here use process.exit(1); and use process manager to restart at any stop in deployment phase.
+});
+process.on('unhandledRejection', (exception) => {
+  console.log('unhandled Rejection occurred:\n', exception);
+  // here use process.exit(1); and use process manager to restart at any stop in deployment phase.
 });
 
 const {
@@ -49,9 +53,27 @@ mongoose
   .connect(uri)
   .then(() => {
     console.log('Connected to MongoDB Atlas');
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Server is running on port   http://localhost:${PORT}/`);
     });
+
+    const gracefulShutdown = () => {
+      console.log('Starting graceful shutdown...');
+      
+      server.close(() => {
+        console.log('Express server closed.');
+        
+        mongoose.disconnect();
+      });
+
+      setTimeout(() => {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGINT', gracefulShutdown);
+    process.on('SIGTERM', gracefulShutdown);
   })
   .catch((err) => {
     console.error('Error connecting to MongoDB Atlas:', err);

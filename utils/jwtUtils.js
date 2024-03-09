@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET, JWT_SECRET_ADMIN } = process.env;
 
@@ -26,27 +26,4 @@ const generateTokenUser = (user) => {
   }
 };
 
-const generateTokenAdmin = (admin) => {
-  try {
-    if (!admin || !admin.username || !admin._id) {
-      return new Error('Invalid admin object.');
-    }
-
-    if (!JWT_SECRET_ADMIN) {
-      return new Error('JWT admin secret is not defined.');
-    }
-
-    const token = jwt.sign(
-      { username: admin.username, id: admin._id },
-      JWT_SECRET_ADMIN,
-      { expiresIn: '7d' },
-    );
-
-    return token;
-  } catch (error) {
-    console.error('Error generating JWT token:', error.message);
-    throw error;
-  }
-};
-
-module.exports = { generateTokenUser, generateTokenAdmin };
+module.exports = { generateTokenUser };
